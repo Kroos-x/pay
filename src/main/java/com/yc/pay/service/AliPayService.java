@@ -26,6 +26,7 @@ public interface AliPayService {
     /**
      *  阿里PC支付异步通知
      * @param notifyData 请求数据
+     * @return 响应信息
      */
-    void asyncNotify(String notifyData);
+    String asyncNotify(String notifyData);
 }

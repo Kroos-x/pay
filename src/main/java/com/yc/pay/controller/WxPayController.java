@@ -46,11 +46,9 @@ public class WxPayController {
      */
     @PostMapping("/notify")
     @ResponseBody
-    public void asyncNotify(@RequestBody String notifyData){
+    public String asyncNotify(@RequestBody String notifyData){
         // TODO: 2020/5/13 接收参数方式
-        log.info("================微信native支付异步回调================");
-        log.info("================微信native支付异步回调================");
-        wxPayService.asyncNotify(notifyData);
+        return wxPayService.asyncNotify(notifyData);
     }
 
 

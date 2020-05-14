@@ -18,7 +18,8 @@ public enum Error implements IError {
      * 订单异常
      */
     OrderDuplicate(500, 50100, "订单号已存在，请勿重复提交!"),
-
+    OrderError(500, 50101, "订单号错误!"),
+    AmountError(500, 50102, "异步通知中的订单金额与实际支付金额不同!"),
     ;
 
     /**

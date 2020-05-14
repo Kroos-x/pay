@@ -55,7 +55,7 @@ public class PayInfo implements Serializable {
     /**
      * 支付状态
      */
-    private String platformState;
+    private String payState;
     /**
      * 创建时间
      */

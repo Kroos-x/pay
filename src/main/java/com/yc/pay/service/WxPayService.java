@@ -26,6 +26,7 @@ public interface WxPayService {
     /**
      *  微信native支付异步通知
      * @param notifyData 请求数据
+     * @return 响应信息
      */
-    void asyncNotify(String notifyData);
+    String asyncNotify(String notifyData);
 }

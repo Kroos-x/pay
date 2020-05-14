@@ -1,12 +1,17 @@
 package com.yc.pay.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.lly835.bestpay.enums.BestPayTypeEnum;
 import com.lly835.bestpay.model.PayRequest;
 import com.lly835.bestpay.model.PayResponse;
 import com.lly835.bestpay.service.BestPayService;
 import com.yc.pay.config.BestPayConfig;
 import com.yc.pay.config.constant.CommonEnum;
+import com.yc.pay.config.global.error.Error;
+import com.yc.pay.config.global.error.ErrorException;
 import com.yc.pay.form.PayInfoForm;
+import com.yc.pay.pojo.PayInfo;
 import com.yc.pay.service.AliPayService;
 import com.yc.pay.service.PayInfoService;
 import lombok.extern.slf4j.Slf4j;
@@ -55,15 +60,38 @@ public class AliPayServiceImpl implements AliPayService {
         // 固定0.01
         payRequest.setOrderAmount(BigDecimal.valueOf(0.01).doubleValue());
         PayResponse response = bestPayService.pay(payRequest);
+        log.info("========= 支付宝PC支付响应信息========");
         log.info("response={}",response);
+        log.info("========= 支付宝PC支付响应信息========");
         map.put("body",response.getBody());
         return map;
     }
 
     @Override
-    public void asyncNotify(String notifyData) {
-        log.info("回调数据");
+    public String asyncNotify(String notifyData) {
+        log.info("========== 阿里PC支付回调响应信息 ===========");
         log.info("notifyData={}",notifyData);
-        log.info("回调数据");
+        log.info("========== 阿里PC支付回调响应信息 ===========");
+        // 1.签名校验
+        BestPayService bestPayService = wxBestPayConfig.bestPayService();
+        PayResponse payResponse = bestPayService.asyncNotify(notifyData);
+        // 2.金额校验
+        PayInfo payInfo = this.payInfoService.getBaseMapper().selectOne(new LambdaQueryWrapper<PayInfo>()
+                .eq(PayInfo::getOrderNo,payResponse.getOrderId())
+        );
+        if(ObjectUtils.isNull(payInfo)){
+            throw new ErrorException(Error.OrderError);
+        }
+        if(!payInfo.getPayState().equals(CommonEnum.OrderStatus.SUCCESS)){
+            if(payInfo.getPayAmount().compareTo(BigDecimal.valueOf(payResponse.getOrderAmount())) != 0){
+                throw new ErrorException(Error.AmountError);
+            }
+            // 3.修改订单状态
+            payInfo.setPayState(CommonEnum.OrderStatus.SUCCESS.getName());
+            payInfo.setPlatformNumber(payResponse.getOutTradeNo());
+            this.payInfoService.getBaseMapper().updateById(payInfo);
+        }
+        // 4.返回数据给支付宝
+        return "success";
     }
 }

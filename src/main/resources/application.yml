@@ -24,3 +24,16 @@ spring:
       pool-prepared-statements: true
       max-open-prepared-statements: 50
       max-pool-prepared-statement-per-connection-size: 20
+
+# ============ 认证信息 =========
+pay:
+  auth:
+    wx:
+      app-id:
+      mch-id:
+      mch-key:
+      notify-url:
+    ali:
+      app-id:
+      notify-url:
+      return-url:
