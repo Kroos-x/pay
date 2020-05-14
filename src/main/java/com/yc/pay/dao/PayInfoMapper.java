@@ -1,6 +1,6 @@
 package com.yc.pay.dao;
 
-import com.yc.pay.pojo.MallPay;
+import com.yc.pay.pojo.PayInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.springframework.stereotype.Repository;
 /**
@@ -17,6 +17,6 @@ import org.springframework.stereotype.Repository;
  *
  */
 @Repository
-public interface MallPayMapper extends BaseMapper<MallPay> {
+public interface PayInfoMapper extends BaseMapper<PayInfo> {
 
 }

@@ -1,16 +1,17 @@
 package com.yc.pay.pojo;
 
-import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.IdType;
-import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 /**
- * 功能描述：
+ * 功能描述：支付信息
  *  <p>版权所有：</p>
  *  未经本人许可，不得以任何方式复制或使用本程序任何部分
  *
@@ -23,14 +24,14 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class MallPay implements Serializable {
+public class PayInfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
     /**
      * 主键
      */
-    @TableId(value = "mall_pay_id", type = IdType.UUID)
-    private String mallPayId;
+    @TableId(value = "pay_info_id", type = IdType.UUID)
+    private String PayInfoId;
     /**
      * 用户id
      */
@@ -40,7 +41,7 @@ public class MallPay implements Serializable {
      */
     private String orderNo;
     /**
-     * 支付平台:1-支付宝,2-微信
+     * 支付平台:0-支付宝,1-微信
      */
     private Integer payPlatform;
     /**
@@ -48,11 +49,11 @@ public class MallPay implements Serializable {
      */
     private BigDecimal payAmount;
     /**
-     * 支付宝支付流水号
+     * 平台支付流水号
      */
     private String platformNumber;
     /**
-     * 支付宝支付状态
+     * 支付状态
      */
     private String platformState;
     /**

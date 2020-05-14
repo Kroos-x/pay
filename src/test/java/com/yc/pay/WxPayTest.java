@@ -1,5 +1,6 @@
 package com.yc.pay;
 
+import com.yc.pay.form.PayInfoForm;
 import com.yc.pay.service.WxPayService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,11 @@ public class WxPayTest extends PayApplicationTests{
 
     @Test
     public void create (){
-        wxPayService.wxNativePay("2020051201", BigDecimal.valueOf(0.01));
+        PayInfoForm form = new PayInfoForm();
+        form.setOrderNo("2020051201");
+        form.setAmount(BigDecimal.valueOf(0.01));
+        form.setSysUserId("jifsodjfiosd8908923");
+        wxPayService.wxNativePay(form);
     }
 
 }

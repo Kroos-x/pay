@@ -14,18 +14,18 @@ package com.yc.pay.config.constant;
  */
 public interface CommonEnum {
 
-    enum DelFlag implements CommonEnum{
+    enum PayPlatform implements CommonEnum{
         /**
-         * 删除状态
+         * 支付平台
          */
-        DEL(1,"已删除"),
-        NO_DEL(0,"未删除")
+        WX(0,"微信"),
+        ALI(1,"支付宝")
         ;
 
         private Integer code;
         private String  name;
 
-        DelFlag(Integer code,String name){
+        PayPlatform(Integer code,String name){
             this.code = code;
             this.name = name;
         }
@@ -39,24 +39,23 @@ public interface CommonEnum {
         }
     }
 
-    enum State implements CommonEnum{
+    enum OrderStatus implements CommonEnum{
         /**
-         * 冻结状态
+         * 支付平台
          */
-        Disabled(1,"冻结"),
-        enabled(0,"正常")
+        SUCCESS("支付成功"),
+        REFUND("转入退款"),
+        NOTPAY("未支付"),
+        CLOSED("已关闭"),
+        REVOKED("已撤销（刷卡支付）"),
+        USERPAYING("用户支付中"),
+        PAYERROR("支付失败"),
+        UNKNOW("未知状态")
         ;
-
-        private Integer code;
         private String  name;
 
-        State(Integer code,String name){
-            this.code = code;
+        OrderStatus(String name){
             this.name = name;
-        }
-
-        public Integer getCode(){
-            return code;
         }
 
         public String getName(){

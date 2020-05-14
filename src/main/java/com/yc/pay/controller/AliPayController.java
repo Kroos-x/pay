@@ -1,6 +1,6 @@
 package com.yc.pay.controller;
 
-import com.lly835.bestpay.model.PayResponse;
+import com.yc.pay.form.PayInfoForm;
 import com.yc.pay.service.AliPayService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,14 +8,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * 功能描述：支付宝支付控制层
  * <p>版权所有：</p>
- * 未经本公司许可，不得以任何方式复制或使用本程序任何部分
+ * 未经本人许可，不得以任何方式复制或使用本程序任何部分
  *
  * @Company: 紫色年华
  * @Author: xieyc
@@ -35,16 +31,12 @@ public class AliPayController {
     }
     /**
      * 支付宝支付预订单
-     * @param orderId 订单号
-     * @param amount 支付金额
+     * @param payInfoForm 请求信息
      * @return 支付页面
      */
     @GetMapping("/createForAliNative")
-    public ModelAndView create(@RequestParam("orderId")String orderId, @RequestParam("amount") BigDecimal amount){
-        PayResponse response = aliPayService.pcPay(orderId, amount);
-        Map map = new HashMap();
-        map.put("body",response.getBody());
-        return new ModelAndView ("createForAliPayPc",map);
+    public ModelAndView create(PayInfoForm payInfoForm){
+        return new ModelAndView ("createForAliPayPc",aliPayService.pcPay(payInfoForm));
     }
 
     /**

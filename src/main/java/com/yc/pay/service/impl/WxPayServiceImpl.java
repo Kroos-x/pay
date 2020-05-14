@@ -4,7 +4,10 @@ import com.lly835.bestpay.enums.BestPayTypeEnum;
 import com.lly835.bestpay.model.PayRequest;
 import com.lly835.bestpay.model.PayResponse;
 import com.lly835.bestpay.service.BestPayService;
-import com.yc.pay.config.WxBestPayConfig;
+import com.yc.pay.config.BestPayConfig;
+import com.yc.pay.config.constant.CommonEnum;
+import com.yc.pay.form.PayInfoForm;
+import com.yc.pay.service.PayInfoService;
 import com.yc.pay.service.WxPayService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 功能描述：
@@ -28,26 +33,34 @@ import java.math.BigDecimal;
 @Transactional(rollbackFor = Exception.class)
 public class WxPayServiceImpl implements WxPayService{
 
-    private final WxBestPayConfig wxBestPayConfig;
+    private final BestPayConfig wxBestPayConfig;
+    private final PayInfoService payInfoService;
 
     @Autowired
-    public WxPayServiceImpl(WxBestPayConfig wxBestPayConfig){
+    public WxPayServiceImpl(BestPayConfig wxBestPayConfig,PayInfoService payInfoService){
         this.wxBestPayConfig = wxBestPayConfig;
+        this.payInfoService = payInfoService;
     }
 
     @Override
-    public PayResponse wxNativePay(String orderId, BigDecimal amount) {
-        // TODO: 2020/5/13 订单信息入库
-        // TODO: 2020/5/13 重复订单号生成支付要有校验
+    public Map<String,String> wxNativePay(PayInfoForm form) {
+        // 支付信息入库
+        form.setPayPlatform(CommonEnum.PayPlatform.WX.getCode());
+        this.payInfoService.savePayInfo(form);
+        Map map = new HashMap(16);
         BestPayService bestPayService = wxBestPayConfig.bestPayService();
         PayRequest payRequest = new PayRequest();
         payRequest.setPayTypeEnum(BestPayTypeEnum.WXPAY_NATIVE);
-        payRequest.setOrderId(orderId);
+        payRequest.setOrderId(form.getOrderNo());
         payRequest.setOrderName("7223287-DeepLearning");
-        payRequest.setOrderAmount(amount.doubleValue());
+        // 固定支付0.01
+        payRequest.setOrderAmount(BigDecimal.valueOf(0.01).doubleValue());
         PayResponse response = bestPayService.pay(payRequest);
+        log.info("========= 微信native支付响应信息========");
         log.info("response={}",response);
-        return response;
+        log.info("========= 微信native支付响应信息========");
+        map.put("codeUrl",response.getCodeUrl());
+        return map;
     }
 
     @Override
@@ -64,5 +77,6 @@ public class WxPayServiceImpl implements WxPayService{
         log.info("payResponse={}",payResponse);
     }
 
+    // =============== 子方法 ==================
 
 }

@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
  * @Version: 1.0.0
  */
 @Component
-public class WxBestPayConfig {
+public class BestPayConfig {
 
     @Bean
     public BestPayService bestPayService(){

@@ -4,19 +4,24 @@ import com.lly835.bestpay.enums.BestPayTypeEnum;
 import com.lly835.bestpay.model.PayRequest;
 import com.lly835.bestpay.model.PayResponse;
 import com.lly835.bestpay.service.BestPayService;
-import com.yc.pay.config.WxBestPayConfig;
+import com.yc.pay.config.BestPayConfig;
+import com.yc.pay.config.constant.CommonEnum;
+import com.yc.pay.form.PayInfoForm;
 import com.yc.pay.service.AliPayService;
+import com.yc.pay.service.PayInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 功能描述：
  * <p>版权所有：</p>
- * 未经本公司许可，不得以任何方式复制或使用本程序任何部分
+ * 未经本人许可，不得以任何方式复制或使用本程序任何部分
  *
  * @Company: 紫色年华
  * @Author: xieyc
@@ -28,26 +33,31 @@ import java.math.BigDecimal;
 @Transactional(rollbackFor = Exception.class)
 public class AliPayServiceImpl implements AliPayService {
 
-    private final WxBestPayConfig wxBestPayConfig;
+    private final BestPayConfig wxBestPayConfig;
+    private final PayInfoService payInfoService;
 
     @Autowired
-    public AliPayServiceImpl(WxBestPayConfig wxBestPayConfig){
+    public AliPayServiceImpl(BestPayConfig wxBestPayConfig,PayInfoService payInfoService){
         this.wxBestPayConfig = wxBestPayConfig;
+        this.payInfoService = payInfoService;
     }
 
     @Override
-    public PayResponse pcPay(String orderId, BigDecimal amount) {
-        // TODO: 2020/5/13 订单信息入库
-        // TODO: 2020/5/13 重复订单号生成支付要有校验
+    public Map<String,String> pcPay(PayInfoForm payInfoForm) {
+        payInfoForm.setPayPlatform(CommonEnum.PayPlatform.ALI.getCode());
+        this.payInfoService.savePayInfo(payInfoForm);
+        Map<String,String> map = new HashMap<>(16);
         BestPayService bestPayService = wxBestPayConfig.bestPayService();
         PayRequest payRequest = new PayRequest();
         payRequest.setPayTypeEnum(BestPayTypeEnum.ALIPAY_PC);
-        payRequest.setOrderId(orderId);
+        payRequest.setOrderId(payInfoForm.getOrderNo());
         payRequest.setOrderName("7223287-DeepLearning");
-        payRequest.setOrderAmount(amount.doubleValue());
+        // 固定0.01
+        payRequest.setOrderAmount(BigDecimal.valueOf(0.01).doubleValue());
         PayResponse response = bestPayService.pay(payRequest);
         log.info("response={}",response);
-        return response;
+        map.put("body",response.getBody());
+        return map;
     }
 
     @Override

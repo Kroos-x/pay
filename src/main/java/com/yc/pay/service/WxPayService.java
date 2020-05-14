@@ -1,8 +1,8 @@
 package com.yc.pay.service;
 
-import com.lly835.bestpay.model.PayResponse;
+import com.yc.pay.form.PayInfoForm;
 
-import java.math.BigDecimal;
+import java.util.Map;
 
 /**
  * 功能描述：
@@ -18,11 +18,10 @@ public interface WxPayService {
 
     /**
      * native 支付
-     * @param orderId 订单ID
-     * @param amount 支付金额
+     * @param form 请求信息
      * @return response
      */
-    PayResponse wxNativePay(String orderId, BigDecimal amount);
+    Map<String,String> wxNativePay(PayInfoForm form);
 
     /**
      *  微信native支付异步通知
