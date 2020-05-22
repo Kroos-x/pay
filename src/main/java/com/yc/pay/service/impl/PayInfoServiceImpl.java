@@ -41,8 +41,15 @@ public class PayInfoServiceImpl extends ServiceImpl<PayInfoMapper, PayInfo> impl
         payInfo.setOrderNo(form.getOrderNo());
         payInfo.setPayPlatform(form.getPayPlatform());
         payInfo.setPayAmount(form.getAmount());
-        payInfo.setPayState(CommonEnum.OrderStatus.NOTPAY.getName());
+        payInfo.setPayState(CommonEnum.OrderStatus.NOTPAY.getCode());
         this.baseMapper.insert(payInfo);
+    }
+
+    @Override
+    public PayInfo payInfo(String orderNo) {
+        return this.baseMapper.selectOne(new LambdaQueryWrapper<PayInfo>()
+            .eq(PayInfo::getOrderNo,orderNo)
+        );
     }
 
 

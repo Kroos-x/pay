@@ -3,6 +3,7 @@ package com.yc.pay.service;
 import com.yc.pay.form.PayInfoForm;
 import com.yc.pay.pojo.PayInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * 功能描述：支付信息
@@ -23,4 +24,11 @@ public interface PayInfoService extends IService<PayInfo> {
      * @param form 请求信息
      */
     void savePayInfo(PayInfoForm form);
+
+    /**
+     * 查询订单信息
+     * @param orderNo 订单ID
+     * @return 订单信息
+     */
+    PayInfo payInfo(@RequestParam String orderNo);
 }

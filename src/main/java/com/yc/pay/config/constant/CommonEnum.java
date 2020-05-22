@@ -18,8 +18,9 @@ public interface CommonEnum {
         /**
          * 支付平台
          */
-        WX(0,"微信"),
-        ALI(1,"支付宝")
+        ALI(0,"支付宝"),
+        WX(1,"微信")
+
         ;
 
         private Integer code;
@@ -43,19 +44,26 @@ public interface CommonEnum {
         /**
          * 支付平台
          */
-        SUCCESS("支付成功"),
-        REFUND("转入退款"),
-        NOTPAY("未支付"),
-        CLOSED("已关闭"),
-        REVOKED("已撤销（刷卡支付）"),
-        USERPAYING("用户支付中"),
-        PAYERROR("支付失败"),
-        UNKNOW("未知状态")
+        SUCCESS("SUCCESS","支付成功"),
+        REFUND("REFUND","转入退款"),
+        NOTPAY("NOTPAY","未支付"),
+        CLOSED("CLOSED","已关闭"),
+        REVOKED("REVOKED","已撤销(刷卡支付）"),
+        USERPAYING("USERPAYING","用户支付中"),
+        PAYERROR("PAYERROR","支付失败"),
+        UNKNOW("UNKNOW","未知状态")
         ;
-        private String  name;
 
-        OrderStatus(String name){
+        private String code;
+        private String name;
+
+        OrderStatus(String code,String name){
+            this.code = code;
             this.name = name;
+        }
+
+        public String getCode(){
+            return code;
         }
 
         public String getName(){

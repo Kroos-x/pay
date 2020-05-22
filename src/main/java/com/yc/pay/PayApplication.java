@@ -14,5 +14,4 @@ public class PayApplication {
         SpringApplication.run(PayApplication.class, args);
     }
 
-
 }

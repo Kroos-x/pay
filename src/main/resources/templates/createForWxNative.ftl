@@ -6,6 +6,8 @@
 </head>
 <body>
 <div id="myQrcode"></div>
+<div id="orderNo" hidden>${orderNo}</div>
+<div id="returnUrl" hidden>${returnUrl}</div>
 
 <script src="https://cdn.bootcss.com/jquery/1.5.1/jquery.min.js"></script>
 <script src="https://cdn.bootcss.com/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
@@ -13,6 +15,29 @@
     jQuery('#myQrcode').qrcode({
         text	: "${codeUrl}"
     });
+
+    $(function() {
+        setInterval(function () {
+            console.log('开始查询支付状态...')
+            $.ajax({
+                'url': '/payInfo/payInfo',
+                data: {
+                    'orderNo': '2020051401'
+                },
+                success: function (result) {
+                    console.log(result)
+                    if (result.payState != null
+                        && result.payState === 'SUCCESS') {
+                        console.log('sadfdsfsd')
+                        location.href = $('#returnUrl').text()
+                    }
+                },
+                error: function (result) {
+                    alert(result)
+                }
+            })
+        },2000)
+    })
 </script>
 </body>
 </html>

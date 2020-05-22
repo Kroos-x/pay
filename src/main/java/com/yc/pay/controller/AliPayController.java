@@ -46,7 +46,6 @@ public class AliPayController {
     @PostMapping("/notify")
     @ResponseBody
     public String asyncNotify(@RequestBody String notifyData){
-        // TODO: 2020/5/13 接收参数方式
         return aliPayService.asyncNotify(notifyData);
     }
 

@@ -35,9 +35,14 @@ public class WxParamProperties {
     private String mchKey;
 
     /**
-     * notifyUrl
+     * 通知地址
      */
     private String notifyUrl;
+
+    /**
+     * 跳转地址
+     */
+    private String returnUrl;
 
 
 }

@@ -29,4 +29,5 @@ public interface WxPayService {
      * @return 响应信息
      */
     String asyncNotify(String notifyData);
+
 }
