@@ -1,14 +1,14 @@
 package com.yc.pay.controller;
 
-import com.yc.pay.form.PayInfoForm;
 import com.yc.pay.pojo.PayInfo;
-import com.yc.pay.service.AliPayService;
 import com.yc.pay.service.PayInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * 功能描述：支付信息控制层
