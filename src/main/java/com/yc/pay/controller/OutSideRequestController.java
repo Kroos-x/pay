@@ -98,6 +98,36 @@ public class OutSideRequestController {
         return "error";
     }
 
+    @PostMapping("/test4")
+    @ResponseBody
+    public String test4(HttpServletRequest request) {
+        try {
+            request.setCharacterEncoding(CommonConstant.CHARSET_UTF_8);
+            BufferedReader streamReader = new BufferedReader(new InputStreamReader(request.getInputStream(), "UTF-8"));
+            StringBuilder responseStrBuilder = new StringBuilder();
+            String inputStr;
+            while ((inputStr = streamReader.readLine()) != null){
+                responseStrBuilder.append(inputStr);
+            }
+            Map<String, String> map = JSON.parseObject(responseStrBuilder.toString(), Map.class);
+            //获取报文密文信息
+            String notifyData = map.get("requestData");
+            //报文解密
+            String deStr = EncoderUtil.rsaDecrypt(notifyData,CommonConstant.RSA_PRIVATE_KEY);
+            // 验签
+            String sign = EncoderUtil.md5(deStr+encodeProperties.getSecretKey());
+            //获取签名数据密文信息
+            String signMsg = map.get("signData");
+            if(StringUtils.equals(signMsg,sign)){
+                return "success";
+            } else {
+                return "error";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "error";
+    }
 
 
 }
