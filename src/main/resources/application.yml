@@ -33,8 +33,12 @@ pay:
       mch-id: 1483469312
       mch-key: 098F6BCD4621D373CADE4E832627B4F6
       notify-url: http://q3uavj.natappfree.cc/wxPay/notify
-      return-url: https://baidu.com
+      return-url: http://127.0.0.1:8080/imall/Order
     ali:
       app-id: 2018062960540016
       notify-url: http://q3uavj.natappfree.cc/aliPay/notify
-      return-url: https://baidu.com
+      return-url: http://127.0.0.1:8080/imall/Order
+#============= 密钥信息 ==========
+  encode:
+    secretKey: deepLearning-dev@secretKey
+    aesKey: deepLearning-dev@aesKey

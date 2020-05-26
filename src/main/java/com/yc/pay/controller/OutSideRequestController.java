@@ -1,8 +1,13 @@
 package com.yc.pay.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.alibaba.fastjson.JSON;
+import com.yc.pay.config.constant.CommonConstant;
+import com.yc.pay.config.propertie.EncodeProperties;
+import com.yc.pay.config.utils.EncoderUtil;
 import com.yc.pay.pojo.PayInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,12 +15,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 功能描述：
+ * 功能描述：站外接口对接
  * <p>版权所有：</p>
  * 未经本人许可，不得以任何方式复制或使用本程序任何部分
  *
@@ -29,9 +36,16 @@ import java.util.Map;
 @RequestMapping("/sideRequest")
 public class OutSideRequestController {
 
+    private final EncodeProperties encodeProperties;
+
+    @Autowired
+    public OutSideRequestController(EncodeProperties encodeProperties){
+        this.encodeProperties = encodeProperties;
+    }
+
     @GetMapping("/test1")
     @ResponseBody
-    public PayInfo test1(PayInfo form){
+    public PayInfo test1(PayInfo form) {
         PayInfo payInfo = new PayInfo();
         payInfo.setSysUserId("124321423");
         payInfo.setOrderNo("23434");
@@ -42,7 +56,7 @@ public class OutSideRequestController {
 
     @PostMapping("/test2")
     @ResponseBody
-    public PayInfo test2(PayInfo form){
+    public PayInfo test2(PayInfo form) {
         PayInfo payInfo = new PayInfo();
         payInfo.setPayInfoId("12312312");
         payInfo.setSysUserId("124321423");
@@ -54,45 +68,36 @@ public class OutSideRequestController {
 
     @PostMapping("/test3")
     @ResponseBody
-    public String test3(HttpServletRequest request){
-        Map<String, String> tranMap = new HashMap<>();
+    public String test3(HttpServletRequest request) {
         try {
-            request.setCharacterEncoding("UTF-8");
-            // 获取请求数据
-            String signData = request.getParameter("signData");
-            String transData = request.getParameter("transData");
-            //将报文中%2B转换为+
-            transData = transData.replaceAll("%2B", "+");
-            //解析请求数据map
-            ObjectMapper mapper = new ObjectMapper();
-            tranMap = mapper.readValue(transData, Map.class);
+            String aesKey = encodeProperties.getAesKey();
+            request.setCharacterEncoding(CommonConstant.CHARSET_UTF_8);
+            BufferedReader streamReader = new BufferedReader(new InputStreamReader(request.getInputStream(), "UTF-8"));
+            StringBuilder responseStrBuilder = new StringBuilder();
+            String inputStr;
+	        while ((inputStr = streamReader.readLine()) != null){
+                responseStrBuilder.append(inputStr);
+            }
+            Map<String, String> map = JSON.parseObject(responseStrBuilder.toString(), Map.class);
             //获取报文密文信息
-            String notifyData = tranMap.get("notifyData");
-            //获取签名数据密文信息
-            String signMsg = tranMap.get("signData");
+            String notifyData = map.get("requestData");
             //报文解密
-            // byte[] bSrc = cn.com.infosec.icbc.ReturnValue.base64dec(notifyData.getBytes());
-            // //签名数据解密
-            // byte[] bSign = cn.com.infosec.icbc.ReturnValue.base64dec(signMsg.getBytes());
-            // //获取验签公钥
-            // // File file = new File(ICBCConstant.cert_path);
-            // File file = new File(ResourceUtils.getURL("classpath:templates/").getPath() + File.separator + "pay2cf.dccnet.com.cn.cer");
-            // byte[] tempByte = new byte[100];
-            // if (file.exists()) {
-            //     int byteread = 0;
-            //     FileInputStream in = new FileInputStream(file);
-            //     tempByte = new byte[in.available()];
-            //     in.read(tempByte);
-            // }
-            // //验签公钥解密
-            // byte[] EncCert = cn.com.infosec.icbc.ReturnValue.base64enc(tempByte);
-            // //验签 0为验签通过  其余为验签失败
-            // int verifyResult = cn.com.infosec.icbc.ReturnValue.verifySign(bSrc, bSrc.length, tempByte, bSign);
+            String deStr = EncoderUtil.aesDecrypt(notifyData,aesKey);
+            // 验签
+            String sign = EncoderUtil.md5(deStr+encodeProperties.getSecretKey());
+            //获取签名数据密文信息
+            String signMsg = map.get("signData");
+            if(StringUtils.equals(signMsg,sign)){
+                return "success";
+            } else {
+                return "error";
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "success";
+        return "error";
     }
+
 
 
 }
