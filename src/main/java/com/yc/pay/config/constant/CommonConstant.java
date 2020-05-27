@@ -12,20 +12,22 @@ package com.yc.pay.config.constant;
  */
 public class CommonConstant {
 
+    // =============== 基础常量 ====================
+    /**
+     * 成功码
+     */
+    public static final int SUCCESS_CODE = 200;
+
     // ================== 编码格式 ===========================
-    /** 文本编码 */
-    public static String TEXT_CONTENTTYPE = "text/plain;charset=UTF-8";
-
-    /** JSON编码 */
-    public static String JSON_CONTENTTYPE = "application/json;charset=UTF-8";
-
-    /** XML编码 */
-    public static String XML_CONTENTTYPE = "text/xml;charset=UTF-8";
-
     /**
      * 编码格式
      */
     public static final String CHARSET_UTF_8 = "UTF-8";
+
+    /**
+     * 编码格式
+     */
+    public static final String CHARSET_GBK = "GBK";
 
     //================= 加解密 ====================
     /**

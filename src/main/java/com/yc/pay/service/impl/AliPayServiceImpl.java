@@ -1,14 +1,20 @@
 package com.yc.pay.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.lly835.bestpay.enums.BestPayTypeEnum;
 import com.lly835.bestpay.model.PayRequest;
 import com.lly835.bestpay.model.PayResponse;
 import com.lly835.bestpay.service.BestPayService;
+import com.yc.pay.config.constant.CommonConstant;
 import com.yc.pay.config.constant.CommonEnum;
 import com.yc.pay.config.global.error.Error;
 import com.yc.pay.config.global.error.ErrorException;
+import com.yc.pay.config.propertie.EncodeProperties;
+import com.yc.pay.config.propertie.OutSideUrlProperties;
+import com.yc.pay.config.utils.EncoderUtil;
+import com.yc.pay.config.utils.HttpClientUtil;
 import com.yc.pay.form.PayInfoForm;
 import com.yc.pay.pojo.PayInfo;
 import com.yc.pay.service.AliPayService;
@@ -39,11 +45,16 @@ public class AliPayServiceImpl implements AliPayService {
 
     private final BestPayService bestPayService;
     private final PayInfoService payInfoService;
+    private final EncodeProperties encodeProperties;
+    private final OutSideUrlProperties outSideUrlProperties;
 
     @Autowired
-    public AliPayServiceImpl(PayInfoService payInfoService,BestPayService bestPayService){
+    public AliPayServiceImpl(PayInfoService payInfoService,BestPayService bestPayService,
+                             EncodeProperties encodeProperties,OutSideUrlProperties outSideUrlProperties){
         this.bestPayService = bestPayService;
         this.payInfoService = payInfoService;
+        this.encodeProperties = encodeProperties;
+        this.outSideUrlProperties = outSideUrlProperties;
     }
 
     @Override
@@ -97,6 +108,20 @@ public class AliPayServiceImpl implements AliPayService {
             payInfo.setPayState(CommonEnum.OrderStatus.SUCCESS.getName());
             payInfo.setPlatformNumber(payResponse.getOutTradeNo());
             this.payInfoService.getBaseMapper().updateById(payInfo);
+            // 4.推送消息给业务系统
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("orderNo",payInfo.getOrderNo());
+            jsonObject.put("payType","0");
+            jsonObject.put("payTime",payInfo.getCreateTime());
+            jsonObject.put("sysUserId",payInfo.getSysUserId());
+            // 签名
+            String sign = EncoderUtil.md5(jsonObject.toJSONString()+encodeProperties.getSecretKey());
+            // 密文
+            String requestData = EncoderUtil.rsaEncrypt(jsonObject.toJSONString(), CommonConstant.RSA_PUBLIC_KEY);
+            JSONObject jsonObject1 = new JSONObject();
+            jsonObject1.put("signData", sign);
+            jsonObject1.put("requestData", requestData);
+            HttpClientUtil.doPostJson(outSideUrlProperties.getSyncCallPayUrl(),jsonObject1.toJSONString());
         }
         // 4.返回数据给支付宝
         return "success";

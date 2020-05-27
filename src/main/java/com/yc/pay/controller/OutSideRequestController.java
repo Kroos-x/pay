@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -72,7 +71,7 @@ public class OutSideRequestController {
         try {
             String aesKey = encodeProperties.getAesKey();
             request.setCharacterEncoding(CommonConstant.CHARSET_UTF_8);
-            BufferedReader streamReader = new BufferedReader(new InputStreamReader(request.getInputStream(), "UTF-8"));
+            BufferedReader streamReader = new BufferedReader(new InputStreamReader(request.getInputStream(), CommonConstant.CHARSET_UTF_8));
             StringBuilder responseStrBuilder = new StringBuilder();
             String inputStr;
 	        while ((inputStr = streamReader.readLine()) != null){
@@ -103,7 +102,8 @@ public class OutSideRequestController {
     public String test4(HttpServletRequest request) {
         try {
             request.setCharacterEncoding(CommonConstant.CHARSET_UTF_8);
-            BufferedReader streamReader = new BufferedReader(new InputStreamReader(request.getInputStream(), "UTF-8"));
+            BufferedReader streamReader = new BufferedReader(new InputStreamReader(request.getInputStream(),
+                    CommonConstant.CHARSET_UTF_8));
             StringBuilder responseStrBuilder = new StringBuilder();
             String inputStr;
             while ((inputStr = streamReader.readLine()) != null){

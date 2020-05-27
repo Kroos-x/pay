@@ -22,13 +22,11 @@
             $.ajax({
                 'url': '/payInfo/payInfo',
                 data: {
-                    'orderNo': '2020051401'
+                    'orderNo': ${orderNo}
                 },
                 success: function (result) {
-                    console.log(result)
                     if (result.payState != null
                         && result.payState === 'SUCCESS') {
-                        console.log('sadfdsfsd')
                         location.href = $('#returnUrl').text()
                     }
                 },
