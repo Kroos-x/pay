@@ -117,14 +117,14 @@ public class WxPayServiceImpl implements WxPayService{
                 throw new ErrorException(Error.AmountError);
             }
             // 3.修改订单状态
-            payInfo.setPayState(CommonEnum.OrderStatus.SUCCESS.getName());
+            payInfo.setPayState(CommonEnum.OrderStatus.SUCCESS.getCode());
             payInfo.setPlatformNumber(payResponse.getOutTradeNo());
             this.payInfoService.getBaseMapper().updateById(payInfo);
             // 4.推送消息给业务系统
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("orderNo",payInfo.getOrderNo());
             jsonObject.put("payType","1");
-            jsonObject.put("payTime",payInfo.getCreateTime());
+            jsonObject.put("payTime",payInfo.getCreateTime().toString().replace("T"," "));
             jsonObject.put("sysUserId",payInfo.getSysUserId());
             // 签名
             String sign = EncoderUtil.md5(jsonObject.toJSONString()+encodeProperties.getSecretKey());

@@ -112,7 +112,7 @@ public class AliPayServiceImpl implements AliPayService {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("orderNo",payInfo.getOrderNo());
             jsonObject.put("payType","0");
-            jsonObject.put("payTime",payInfo.getCreateTime());
+            jsonObject.put("payTime",payInfo.getCreateTime().toString().replace("T"," "));
             jsonObject.put("sysUserId",payInfo.getSysUserId());
             // 签名
             String sign = EncoderUtil.md5(jsonObject.toJSONString()+encodeProperties.getSecretKey());

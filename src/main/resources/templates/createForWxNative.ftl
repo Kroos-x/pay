@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>支付</title>
+    <title>微信支付</title>
 </head>
 <body>
 <div id="myQrcode"></div>
@@ -22,12 +22,12 @@
             $.ajax({
                 'url': '/payInfo/payInfo',
                 data: {
-                    'orderNo': ${orderNo}
+                    'orderNo': $('#orderNo').text()
                 },
                 success: function (result) {
                     if (result.payState != null
                         && result.payState === 'SUCCESS') {
-                        location.href = $('#returnUrl').text()
+                        window.open($('#returnUrl').text(),"_self")
                     }
                 },
                 error: function (result) {

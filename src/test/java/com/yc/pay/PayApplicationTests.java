@@ -1,11 +1,14 @@
 package com.yc.pay;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.yc.pay.config.constant.CommonConstant;
 import com.yc.pay.config.propertie.EncodeProperties;
 import com.yc.pay.config.propertie.OutSideUrlProperties;
 import com.yc.pay.config.utils.EncoderUtil;
 import com.yc.pay.config.utils.HttpClientUtil;
+import com.yc.pay.dao.PayInfoMapper;
+import com.yc.pay.pojo.PayInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,14 +27,19 @@ public class PayApplicationTests {
     @Autowired
     private OutSideUrlProperties outSideUrlProperties;
 
+    @Autowired
+    private PayInfoMapper payInfoMapper;
+
     @Test
     public void contextLoads() {
-
+        PayInfo payInfo =this.payInfoMapper.selectOne(new LambdaQueryWrapper<PayInfo>()
+            .eq(PayInfo::getOrderNo,"20200527205527643000001")
+        );
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("orderNo","20200525214113278000001");
+        jsonObject.put("orderNo",payInfo.getOrderNo());
         jsonObject.put("payType","1");
-        jsonObject.put("payTime","2020-05-26 12:12:12");
-        jsonObject.put("sysUserId","3946d9f631e3cd4619afcb9512842435");
+        jsonObject.put("payTime",payInfo.getCreateTime().toString().replace("T"," "));
+        jsonObject.put("sysUserId",payInfo.getSysUserId());
         // 签名
         String sign = EncoderUtil.md5(jsonObject.toJSONString()+encodeProperties.getSecretKey());
         // 密文
